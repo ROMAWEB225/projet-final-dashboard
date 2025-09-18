@@ -368,6 +368,9 @@
             background-color: var(--danger);
         }
     </style>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script> 
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script> 
+    <script> // Initialisez Firebase avec votre configuration const firebaseConfig = { apiKey: "VOTRE-CLE-API", authDomain: "VOTRE-PROJET.firebaseapp.com", projectId: "VOTRE-PROJET-ID", storageBucket: "VOTRE-PROJET.appspot.com", messagingSenderId: "123456789", appId: "VOTRE-APP-ID" }; // Initialisez Firebase firebase.initializeApp(firebaseConfig); // Initialisez Firestore const db = firebase.firestore(); </script>
 </head>
 <body>
     <div class="notification" id="notification">Opération réussie!</div>
@@ -671,6 +674,7 @@
     </div>
 
     <script>
+  // Initialisez Firebase avec votre configuration const firebaseConfig = { apiKey: "VOTRE-CLE-API", authDomain: "VOTRE-PROJET.firebaseapp.com", projectId: "VOTRE-PROJET-ID", storageBucket: "VOTRE-PROJET.appspot.com", messagingSenderId: "123456789", appId: "VOTRE-APP-ID" }; // Initialisez Firebase firebase.initializeApp(firebaseConfig); // Initialisez Firestore const db = firebase.firestore(); </script>
         // Données de l'application
         let vehicles = JSON.parse(localStorage.getItem('garage_vehicles')) || [];
         let interventions = JSON.parse(localStorage.getItem('garage_interventions')) || [];
