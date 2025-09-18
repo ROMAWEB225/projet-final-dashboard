@@ -674,11 +674,9 @@
     </div>
 
     <script>
-  // Initialisez Firebase avec votre configuration const firebaseConfig = { apiKey: "VOTRE-CLE-API", authDomain: "VOTRE-PROJET.firebaseapp.com", projectId: "VOTRE-PROJET-ID", storageBucket: "VOTRE-PROJET.appspot.com", messagingSenderId: "123456789", appId: "VOTRE-APP-ID" }; // Initialisez Firebase firebase.initializeApp(firebaseConfig); // Initialisez Firestore const db = firebase.firestore(); </script>
+  
         // Données de l'application
-        let vehicles = JSON.parse(localStorage.getItem('garage_vehicles')) || [];
-        let interventions = JSON.parse(localStorage.getItem('garage_interventions')) || [];
-        
+        async function loadVehicles() { const snapshot = await db.collection('vehicles').get(); vehicles = snapshot.docs.map(doc => { return { id: doc.id, ...doc.data() }; }); updateUI(); } async function addVehicle(vehicle) { await db.collection('vehicles').add(vehicle); await loadVehicles(); } async function deleteVehicle(id) { await db.collection('vehicles').doc(id).delete(); await loadVehicles(); }
         // Éléments DOM
         const notification = document.getElementById('notification');
         
