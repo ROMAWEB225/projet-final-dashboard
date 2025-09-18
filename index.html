@@ -184,6 +184,7 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
         .data-table th, .data-table td {
@@ -202,7 +203,7 @@
         }
         
         .action-buttons button {
-            padding: 5px 10px;
+            padding: 6px 12px;
             margin-right: 5px;
             border: none;
             border-radius: 4px;
@@ -368,9 +369,6 @@
             background-color: var(--danger);
         }
     </style>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script> 
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script> 
-    <script> // Initialisez Firebase avec votre configuration const firebaseConfig = { apiKey: "VOTRE-CLE-API", authDomain: "VOTRE-PROJET.firebaseapp.com", projectId: "VOTRE-PROJET-ID", storageBucket: "VOTRE-PROJET.appspot.com", messagingSenderId: "123456789", appId: "VOTRE-APP-ID" }; // Initialisez Firebase firebase.initializeApp(firebaseConfig); // Initialisez Firestore const db = firebase.firestore(); </script>
 </head>
 <body>
     <div class="notification" id="notification">Opération réussie!</div>
@@ -392,10 +390,6 @@
             <div class="menu-item" data-tab="interventions">
                 <i>🔧</i>
                 <span>Interventions</span>
-            </div>
-            <div class="menu-item" data-tab="mechanics">
-                <i>👨‍🔧</i>
-                <span>Mécaniciens</span>
             </div>
             <div class="menu-item" data-tab="search">
                 <i>🔍</i>
@@ -673,17 +667,36 @@
         </div>
     </div>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+
     <script>
-  
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDgvf6KnIvbbpllpN35b4vJ21J8zvvuUUw",
+            authDomain: "dashboard-hr-garage.firebaseapp.com",
+            projectId: "dashboard-hr-garage",
+            storageBucket: "dashboard-hr-garage.firebasestorage.app",
+            messagingSenderId: "187836950909",
+            appId: "1:187836950909:web:cbb64faf9f7c8821a70414"
+        };
+
+        // Initialiser Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         // Données de l'application
-        async function loadVehicles() { const snapshot = await db.collection('vehicles').get(); vehicles = snapshot.docs.map(doc => { return { id: doc.id, ...doc.data() }; }); updateUI(); } async function addVehicle(vehicle) { await db.collection('vehicles').add(vehicle); await loadVehicles(); } async function deleteVehicle(id) { await db.collection('vehicles').doc(id).delete(); await loadVehicles(); }
+        let vehicles = [];
+        let interventions = [];
+        
         // Éléments DOM
         const notification = document.getElementById('notification');
         
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
             initApp();
-            updateUI();
+            loadData();
             setupEventListeners();
         });
         
@@ -691,9 +704,24 @@
             // Définir la date du jour comme valeur par défaut pour le champ date
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('date-intervention').value = today;
-            
-            // Charger les véhicules dans le select
-            updateVehicleSelect();
+        }
+        
+        // Charger les données depuis Firestore
+        async function loadData() {
+            try {
+                // Charger les véhicules
+                const vehiclesSnapshot = await db.collection('vehicles').get();
+                vehicles = vehiclesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                // Charger les interventions
+                const interventionsSnapshot = await db.collection('interventions').get();
+                interventions = interventionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                updateUI();
+            } catch (error) {
+                console.error("Erreur lors du chargement des données:", error);
+                showNotification("Erreur de chargement des données", "error");
+            }
         }
         
         function setupEventListeners() {
@@ -743,7 +771,7 @@
             }
         }
         
-        function addVehicle() {
+        async function addVehicle() {
             const immatriculation = document.getElementById('immatriculation').value;
             const modele = document.getElementById('modele').value;
             const couleur = document.getElementById('couleur').value;
@@ -768,7 +796,6 @@
             
             // Ajouter le véhicule
             const newVehicle = {
-                id: Date.now(),
                 immatriculation,
                 modele,
                 couleur,
@@ -778,15 +805,24 @@
                 dateAjout: new Date().toISOString()
             };
             
-            vehicles.push(newVehicle);
-            saveData();
-            updateUI();
-            document.getElementById('vehicle-form').reset();
-            
-            showNotification("Véhicule ajouté avec succès!");
+            try {
+                // Ajouter à Firestore
+                const docRef = await db.collection('vehicles').add(newVehicle);
+                newVehicle.id = docRef.id;
+                
+                // Ajouter au tableau local
+                vehicles.push(newVehicle);
+                updateUI();
+                document.getElementById('vehicle-form').reset();
+                
+                showNotification("Véhicule ajouté avec succès!");
+            } catch (error) {
+                console.error("Erreur lors de l'ajout du véhicule:", error);
+                showNotification("Erreur lors de l'ajout du véhicule", "error");
+            }
         }
         
-        function addIntervention() {
+        async function addIntervention() {
             const vehiculeId = document.getElementById('vehicule-intervention').value;
             const date = document.getElementById('date-intervention').value;
             const type = document.getElementById('type-intervention').value;
@@ -805,7 +841,6 @@
             
             // Ajouter l'intervention
             const newIntervention = {
-                id: Date.now(),
                 vehiculeId: vehicle.id,
                 immatriculation: vehicle.immatriculation,
                 modele: vehicle.modele,
@@ -817,12 +852,21 @@
                 observations
             };
             
-            interventions.push(newIntervention);
-            saveData();
-            updateUI();
-            document.getElementById('intervention-form').reset();
-            
-            showNotification("Intervention enregistrée avec succès!");
+            try {
+                // Ajouter à Firestore
+                const docRef = await db.collection('interventions').add(newIntervention);
+                newIntervention.id = docRef.id;
+                
+                // Ajouter au tableau local
+                interventions.push(newIntervention);
+                updateUI();
+                document.getElementById('intervention-form').reset();
+                
+                showNotification("Intervention enregistrée avec succès!");
+            } catch (error) {
+                console.error("Erreur lors de l'ajout de l'intervention:", error);
+                showNotification("Erreur lors de l'ajout de l'intervention", "error");
+            }
         }
         
         function performSearch() {
@@ -948,8 +992,8 @@
                     <td>${vehicle.couleur}</td>
                     <td>${vehicle.proprietaire}</td>
                     <td class="action-buttons">
-                        <button class="btn-edit" onclick="editVehicle(${vehicle.id})">Modifier</button>
-                        <button class="btn-delete" onclick="deleteVehicle(${vehicle.id})">Supprimer</button>
+                        <button class="btn-edit" onclick="editVehicle('${vehicle.id}')">Modifier</button>
+                        <button class="btn-delete" onclick="deleteVehicle('${vehicle.id}')">Supprimer</button>
                     </td>
                 `;
                 container.appendChild(row);
@@ -982,7 +1026,7 @@
                     <td>${intervention.mecaniciens.join(', ')}</td>
                     <td><span class="status-badge ${statusClass}">${intervention.statut}</span></td>
                     <td class="action-buttons">
-                        <button class="btn-edit" onclick="viewIntervention(${intervention.id})">Détails</button>
+                        <button class="btn-edit" onclick="viewIntervention('${intervention.id}')">Détails</button>
                     </td>
                 `;
                 container.appendChild(row);
@@ -1098,7 +1142,7 @@
             });
         }
         
-        function editVehicle(id) {
+        async function editVehicle(id) {
             const vehicle = vehicles.find(v => v.id === id);
             if (!vehicle) return;
             
@@ -1110,23 +1154,35 @@
             document.getElementById('telephone').value = vehicle.telephone;
             
             // Supprimer le véhicule pour le remplacer après modification
-            deleteVehicle(id, false);
+            await deleteVehicle(id, false);
             
             showNotification("Modifiez le véhicule et cliquez sur Enregistrer");
         }
         
-        function deleteVehicle(id, showNote = true) {
+        async function deleteVehicle(id, showNote = true) {
             if (confirm("Êtes-vous sûr de vouloir supprimer ce véhicule?")) {
-                vehicles = vehicles.filter(v => v.id !== id);
-                
-                // Supprimer aussi les interventions associées
-                interventions = interventions.filter(i => i.vehiculeId !== id);
-                
-                saveData();
-                updateUI();
-                
-                if (showNote) {
-                    showNotification("Véhicule supprimé avec succès");
+                try {
+                    // Supprimer de Firestore
+                    await db.collection('vehicles').doc(id).delete();
+                    
+                    // Supprimer du tableau local
+                    vehicles = vehicles.filter(v => v.id !== id);
+                    
+                    // Supprimer aussi les interventions associées
+                    const interventionsToDelete = interventions.filter(i => i.vehiculeId === id);
+                    for (const intervention of interventionsToDelete) {
+                        await db.collection('interventions').doc(intervention.id).delete();
+                    }
+                    interventions = interventions.filter(i => i.vehiculeId !== id);
+                    
+                    updateUI();
+                    
+                    if (showNote) {
+                        showNotification("Véhicule supprimé avec succès");
+                    }
+                } catch (error) {
+                    console.error("Erreur lors de la suppression du véhicule:", error);
+                    showNotification("Erreur lors de la suppression du véhicule", "error");
                 }
             }
         }
@@ -1148,12 +1204,8 @@ Statut: ${intervention.statut}
 Observations: ${intervention.observations}`);
         }
         
-        function saveData() {
-            localStorage.setItem('garage_vehicles', JSON.stringify(vehicles));
-            localStorage.setItem('garage_interventions', JSON.stringify(interventions));
-        }
-        
         function showNotification(message, type = "success") {
+            const notification = document.getElementById('notification');
             notification.textContent = message;
             notification.className = `notification ${type}`;
             notification.classList.add('show');
