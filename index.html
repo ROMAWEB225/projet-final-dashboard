@@ -1,1235 +1,857 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tableau de Bord - Garage Automobile</title>
-    <style>
-        :root {
-            --primary: #2c3e50;
-            --secondary: #3498db;
-            --accent: #e74c3c;
-            --light: #ecf0f1;
-            --dark: #2c3e50;
-            --success: #2ecc71;
-            --warning: #f39c12;
-            --danger: #e74c3c;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background-color: #f5f7fa;
-            color: #333;
-        }
-        
-        .container {
-            display: flex;
-            min-height: 100vh;
-        }
-        
-        /* Sidebar */
-        .sidebar {
-            width: 250px;
-            background-color: var(--primary);
-            color: white;
-            padding: 20px 0;
-            height: 100vh;
-            position: fixed;
-        }
-        
-        .logo {
-            text-align: center;
-            padding: 20px;
-            font-size: 24px;
-            font-weight: bold;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 20px;
-        }
-        
-        .menu-item {
-            padding: 15px 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-        }
-        
-        .menu-item:hover {
-            background-color: rgba(255,255,255,0.1);
-        }
-        
-        .menu-item.active {
-            background-color: var(--secondary);
-        }
-        
-        .menu-item i {
-            margin-right: 10px;
-        }
-        
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            margin-left: 250px;
-            padding: 20px;
-        }
-        
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        .stats-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .stat-card {
-            background-color: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        
-        .stat-card h3 {
-            color: var(--dark);
-            margin-bottom: 10px;
-        }
-        
-        .stat-card .number {
-            font-size: 32px;
-            font-weight: bold;
-            color: var(--secondary);
-        }
-        
-        /* Forms */
-        .form-section {
-            background-color: white;
-            border-radius: 8px;
-            padding: 25px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-        }
-        
-        .form-section h2 {
-            margin-bottom: 20px;
-            color: var(--primary);
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .form-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .form-group {
-            flex: 1 1 300px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-        
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-        
-        .form-group textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-        
-        .btn {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 500;
-            transition: all 0.3s;
-        }
-        
-        .btn-primary {
-            background-color: var(--secondary);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background-color: #2980b9;
-        }
-        
-        /* Tables */
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .data-table th, .data-table td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        .data-table th {
-            background-color: var(--light);
-            font-weight: 600;
-        }
-        
-        .data-table tr:hover {
-            background-color: rgba(0,0,0,0.02);
-        }
-        
-        .action-buttons button {
-            padding: 6px 12px;
-            margin-right: 5px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        
-        .btn-edit {
-            background-color: var(--warning);
-            color: white;
-        }
-        
-        .btn-delete {
-            background-color: var(--danger);
-            color: white;
-        }
-        
-        /* Tabs */
-        .tabs {
-            display: flex;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-        }
-        
-        .tab.active {
-            border-bottom: 3px solid var(--secondary);
-            color: var(--secondary);
-            font-weight: 500;
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        /* Search section */
-        .search-section {
-            background-color: white;
-            border-radius: 8px;
-            padding: 25px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-        }
-        
-        .search-filters {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .search-filters input, .search-filters select {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            flex: 1 1 200px;
-        }
-        
-        /* Vehicle photo */
-        .vehicle-photo {
-            width: 100px;
-            height: 70px;
-            object-fit: cover;
-            border-radius: 4px;
-        }
-        
-        /* Status badges */
-        .status-badge {
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-        
-        .status-en-cours {
-            background-color: #ffeaa7;
-            color: #d35400;
-        }
-        
-        .status-termine {
-            background-color: #d1f7c4;
-            color: #27ae60;
-        }
-        
-        .status-en-attente {
-            background-color: #dfe6e9;
-            color: #636e72;
-        }
-        
-        /* Responsive */
-        @media (max-width: 992px) {
-            .sidebar {
-                width: 200px;
-            }
-            
-            .main-content {
-                margin-left: 200px;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 70px;
-                overflow: hidden;
-            }
-            
-            .sidebar .logo span, .sidebar .menu-item span {
-                display: none;
-            }
-            
-            .sidebar .menu-item i {
-                margin-right: 0;
-                font-size: 20px;
-            }
-            
-            .main-content {
-                margin-left: 70px;
-            }
-        }
-        
-        @media (max-width: 576px) {
-            .sidebar {
-                display: none;
-            }
-            
-            .main-content {
-                margin-left: 0;
-            }
-            
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-        }
-        
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 5px;
-            background-color: var(--success);
-            color: white;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
-            z-index: 1000;
-        }
-        
-        .notification.show {
-            transform: translateX(0);
-        }
-        
-        .notification.error {
-            background-color: var(--danger);
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Garage HR - Manager</title>
+
+ <style>
+  :root{
+  --primary: #8b0000;   /* rouge foncé */
+  --secondary: #333333; /* gris pur */
+  --accent: #e74c3c;
+  --light: #ffffff;
+  --muted: #f5f5f5;
+  --success: #2ecc71;
+  --warning: #f39c12;
+  --danger: #c0392b;
+  --glass: rgba(255,255,255,0.06);
+}
+
+/* Reset & base */
+*{box-sizing:border-box;margin:0;padding:0;font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif}
+body{background:var(--muted);color:var(--secondary);line-height:1.4}
+.container{display:flex;min-height:100vh}
+
+/* Sidebar */
+.sidebar{
+  width:250px;
+  background:var(--primary);
+  color:var(--light);
+  position:fixed;left:0;top:0;bottom:0;padding:18px 12px;
+  display:flex;flex-direction:column;gap:6px;
+}
+.logo{font-weight:700;font-size:1.1rem;text-align:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:12px}
+.nav{display:flex;flex-direction:column;gap:6px}
+.menu-item{
+  display:flex;gap:10px;align-items:center;padding:12px;border-radius:8px;cursor:pointer;color:var(--light);
+  transition:background .18s, transform .08s;
+}
+.menu-item i{font-size:18px}
+.menu-item span{font-weight:600}
+.menu-item:hover{background:rgba(255,255,255,0.06);transform:translateY(-1px)}
+.menu-item.active{background:var(--secondary);color:var(--light)}
+
+/* Main content */
+.main-content{
+  margin-left:250px;flex:1;padding:20px 26px;
+}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;border-bottom:1px solid #eee;padding-bottom:12px;flex-wrap:wrap}
+.header h1{font-size:1.25rem;color:var(--secondary)}
+.header-controls input{padding:10px;border-radius:6px;border:1px solid #ddd;width:260px}
+
+/* Stats cards */
+.stats-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px;margin:18px 0}
+.stat-card{background:var(--light);border-radius:10px;padding:18px;box-shadow:0 6px 18px rgba(0,0,0,0.06);text-align:center}
+.stat-card h3{color:var(--primary);margin-bottom:10px}
+.stat-card .number{font-size:28px;color:var(--secondary);font-weight:700}
+
+/* Form sections */
+.form-section{background:var(--light);padding:18px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.04);margin-bottom:18px}
+.form-section h2{margin-bottom:12px;color:var(--primary);padding-bottom:8px;border-bottom:1px solid #f2f2f2}
+.form-row{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px}
+.form-group{flex:1 1 260px;min-width:180px}
+.form-group label{display:block;margin-bottom:6px;font-weight:600;color:var(--secondary)}
+.form-group input,.form-group select,.form-group textarea{
+  width:100%;padding:10px;border-radius:8px;border:1px solid #e6e6e6;font-size:14px;background:#fff;color:var(--secondary)
+}
+.form-group textarea{min-height:90px;resize:vertical}
+.select-hint{font-size:12px;color:#666;margin-top:6px}
+
+/* Buttons */
+.btn{cursor:pointer;border-radius:8px;padding:10px 14px;font-weight:700;border:none}
+.btn-primary{background:var(--primary);color:var(--light)}
+.btn-primary:hover{background:var(--secondary)}
+
+/* Tables */
+.data-table{width:100%;border-collapse:collapse;margin-top:12px}
+.data-table th,.data-table td{padding:12px 10px;border-bottom:1px solid #f0f0f0;text-align:left}
+.data-table th{background:transparent;color:var(--secondary);font-weight:700}
+.data-table tr:hover{background:#fafafa}
+.vehicle-photo{width:100px;height:70px;object-fit:cover;border-radius:6px}
+
+/* Status badges */
+.status-badge{padding:6px 10px;border-radius:20px;font-weight:700;font-size:13px}
+.status-en-cours{background:#ffeaa7;color:#d35400}
+.status-termine{background:#d1f7c4;color:#27ae60}
+.status-en-attente{background:#f1f2f6;color:#636e72}
+
+/* small helpers */
+.form-actions{margin-top:10px;display:flex;gap:10px;align-items:center}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* Notification */
+.notification{
+  position:fixed;right:20px;top:20px;padding:12px 16px;border-radius:8px;color:#fff;background:var(--success);box-shadow:0 8px 24px rgba(0,0,0,0.12);transform:translateX(120%);transition:transform 260ms ease;z-index:9999
+}
+.notification.show{transform:translateX(0)}
+.notification.error{background:var(--danger)}
+
+/* Responsive */
+@media (max-width: 992px){
+  .sidebar{width:200px}
+  .main-content{margin-left:200px}
+}
+@media (max-width: 768px){
+  .sidebar{position:relative;width:100%;height:auto;display:flex;flex-direction:row;overflow:auto;padding:12px}
+  .logo{display:none}
+  .menu-item span{display:none}
+  .main-content{margin-left:0;padding:12px}
+  .stats-cards{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+}
+@media (max-width: 480px){
+  .header{flex-direction:column;align-items:flex-start;gap:8px}
+  .header-controls input{width:100%}
+  .form-group{min-width:100%}
+}
+</style>
 </head>
+  
 <body>
-    <div class="notification" id="notification">Opération réussie!</div>
+  <div id="notification" class="notification"></div>
+
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar" aria-label="Navigation principale">
+      <div class="logo"><span> HR MOTORS</span></div>
+
+      <nav class="nav">
+        <div class="menu-item active" data-tab="dashboard"><i>📊</i><span>Tableau de bord</span></div>
+        <div class="menu-item" data-tab="vehicles"><i>🚗</i><span>Véhicules</span></div>
+        <div class="menu-item" data-tab="interventions"><i>🔧</i><span>Interventions</span></div>
+        <div class="menu-item" data-tab="search"><i>🔍</i><span>Recherche</span></div>
+        <div class="menu-item" data-tab="stats"><i>📈</i><span>Statistiques</span></div>
+      </nav>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main-content">
+      <header class="header">
+        <h1>Tableau de Bord - Garage </h1>
+        <div class="header-controls">
+          <input type="text" id="global-search" placeholder="Rechercher..." />
+        </div>
+      </header>
+
+      <!-- Dashboard -->
+      <section id="dashboard-tab" class="tab-content active">
+        <div class="stats-cards">
+          <div class="stat-card">
+            <h3>Véhicules en garage</h3>
+            <div class="number" id="vehicles-count">0</div>
+          </div>
+          <div class="stat-card">
+            <h3>Interventions aujourd'hui</h3>
+            <div class="number" id="interventions-today">0</div>
+          </div>
+          <div class="stat-card">
+            <h3>Vidanges ce mois</h3>
+            <div class="number" id="oil-changes-month">0</div>
+          </div>
+          <div class="stat-card">
+            <h3>Réparations en cours</h3>
+            <div class="number" id="repairs-in-progress">0</div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2>Activité récente</h2>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Véhicule</th><th>Intervention</th><th>Mécanicien</th><th>Date</th><th>Statut</th>
+              </tr>
+            </thead>
+            <tbody id="recent-activity"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Vehicles -->
+      <section id="vehicles-tab" class="tab-content">
+        <div class="form-section">
+          <h2>Nouveau Véhicule</h2>
+          <form id="vehicle-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="immatriculation">Immatriculation</label>
+                <input type="text" id="immatriculation" required />
+              </div>
+              <div class="form-group">
+                <label for="modele">Modèle</label>
+                <input type="text" id="modele" required />
+              </div>
+              <div class="form-group">
+                <label for="couleur">Couleur</label>
+                <input type="text" id="couleur" required />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="photo">Photo du véhicule</label>
+                <input type="file" id="photo" accept="image/*" />
+              </div>
+              <div class="form-group">
+                <label for="proprietaire">Propriétaire</label>
+                <input type="text" id="proprietaire" />
+              </div>
+              <div class="form-group">
+                <label for="telephone">Téléphone</label>
+                <input type="tel" id="telephone" />
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">Enregistrer le véhicule</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="form-section">
+          <h2>Liste des Véhicules</h2>
+          <table class="data-table">
+            <thead>
+              <tr><th>Photo</th><th>Immatriculation</th><th>Modèle</th><th>Couleur</th><th>Propriétaire</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="vehicles-list"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Interventions -->
+      <section id="interventions-tab" class="tab-content">
+        <div class="form-section">
+          <h2>Nouvelle Intervention</h2>
+          <form id="intervention-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="vehicule-intervention">Véhicule</label>
+                <select id="vehicule-intervention" required>
+                  <option value="">Sélectionner un véhicule</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="date-intervention">Date</label>
+                <input type="date" id="date-intervention" required />
+              </div>
+
+              <div class="form-group">
+                <label for="type-intervention">Type d'intervention (choisir ou écrire)</label>
+                <input list="types-intervention" id="type-intervention" placeholder="Choisissez ou écrivez un type" required />
+                <datalist id="types-intervention">
+                  <option value="Vidange">
+                  <option value="Réparation">
+                  <option value="Contrôle technique">
+                  <option value="Carrosserie">
+                  <option value="Électricité">
+                </datalist>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="mecaniciens">Mécaniciens (sélection multiple)</label>
+                <select id="mecaniciens" multiple>
+                  <option value="1">YOBOUET SYLVIN</option>
+                  <option value="2">KHALIL HUSSEIN</option>
+                  <option value="3">NIANKINE YOUSSOUF</option>
+                  <option value="4">OUATTARA ISSIF</option>
+                  <option value="5">BABA DRAMANE</option>
+                  <option value="6">KONE SAIDOU</option>
+                  <option value="7">TRAORE ABDELATIF</option>
+                  <option value="8">KOUAME K WILLIAM</option>
+                  <option value="9">DIABATE HASSAN</option>
+                  <option value="10">MOHAMED</option>
+                  <option value="11">MANBONNE A AZIZ</option>
+                  <option value="12">TOUVOLI KEVIN</option>
+                  <option value="13">TOURE OTHNIEL</option>
+                  <option value="14">VEHI EBENEZER</option>
+                </select>
+                <div class="select-hint">Ctrl/Cmd + clic pour multi-sélection (ou appuyez longuement sur mobile)</div>
+              </div>
+
+              <div class="form-group">
+                <label for="pieces">Pièces utilisées</label>
+                <textarea id="pieces" placeholder="Liste des pièces utilisées..."></textarea>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="statut">Statut</label>
+                <select id="statut" required>
+                  <option value="en-attente">En attente</option>
+                  <option value="en-cours">En cours</option>
+                  <option value="termine">Terminé</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="observations">Observations</label>
+                <textarea id="observations" placeholder="Observations..."></textarea>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">Enregistrer l'intervention</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="form-section">
+          <h2>Interventions Récentes</h2>
+          <table class="data-table">
+            <thead>
+              <tr><th>Véhicule</th><th>Date</th><th>Type</th><th>Mécaniciens</th><th>Statut</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="interventions-list"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Search -->
+      <section id="search-tab" class="tab-content">
+        <div class="search-section">
+          <h2>Recherche de Véhicules</h2>
+          <div class="search-filters">
+            <input type="text" id="search-immatriculation" placeholder="Immatriculation" />
+            <input type="text" id="search-modele" placeholder="Modèle" />
+            <input type="text" id="search-couleur" placeholder="Couleur" />
+            <input type="date" id="search-date" />
+            <select id="search-type">
+              <option value="">Type d'intervention</option>
+              <option value="Vidange">Vidange</option>
+              <option value="Réparation">Réparation</option>
+              <option value="Contrôle technique">Contrôle technique</option>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button id="search-button" class="btn btn-primary">Rechercher</button>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2>Résultats de la Recherche</h2>
+          <table class="data-table">
+            <thead>
+              <tr><th>Photo</th><th>Immatriculation</th><th>Modèle</th><th>Couleur</th><th>Propriétaire</th><th>Date entrée</th><th>Dernière intervention</th></tr>
+            </thead>
+            <tbody id="search-results"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Stats -->
+      <section id="stats-tab" class="tab-content">
+        <div class="form-section">
+          <h2>Statistiques des interventions</h2>
+          <div class="stats-cards">
+            <div class="stat-card">
+              <h3>Total interventions</h3>
+              <div class="number" id="total-interventions">0</div>
+            </div>
+            <div class="stat-card">
+              <h3>Vidanges ce mois</h3>
+              <div class="number" id="month-oil-changes">0</div>
+            </div>
+            <div class="stat-card">
+              <h3>Taux de completion</h3>
+              <div class="number" id="completion-rate">0%</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2>Réparations par mécanicien</h2>
+          <table class="data-table">
+            <thead><tr><th>Mécanicien</th><th>Interventions</th><th>En cours</th><th>Terminées</th></tr></thead>
+            <tbody id="mechanics-stats"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Firebase SDK (compat) -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+
+<script>
+  // Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyDgvf6KnIvbbpllpN35b4vJ21J8zvvuUUw",
+  authDomain: "dashboard-hr-garage.firebaseapp.com",
+  projectId: "dashboard-hr-garage",
+  storageBucket: "dashboard-hr-garage.firebasestorage.app",
+  messagingSenderId: "187836950909",
+  appId: "1:187836950909:web:cbb64faf9f7c8821a70414"
+};
+
+// Init Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// Local state
+let vehicles = [];
+let interventions = [];
+
+// DOM elems
+const notification = document.getElementById('notification');
+
+// Init when DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+  initApp();
+  loadData();
+  setupEventListeners();
+});
+
+function initApp(){
+  // set default date
+  const today = new Date().toISOString().split('T')[0];
+  const dateInput = document.getElementById('date-intervention');
+  if(dateInput) dateInput.value = today;
+}
+
+// Load from Firestore
+async function loadData(){
+  try {
+    const vehiclesSnapshot = await db.collection('vehicles').get();
+    vehicles = vehiclesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    const interventionsSnapshot = await db.collection('interventions').get();
+    interventions = interventionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    updateUI();
+  } catch (err) {
+    console.error("Load error", err);
+    showNotification("Erreur de chargement des données", "error");
+  }
+}
+
+function setupEventListeners(){
+  // sidebar nav
+  document.querySelectorAll('.menu-item').forEach(item => {
+    item.addEventListener('click', function(){
+      switchTab(this.dataset.tab);
+      document.querySelectorAll('.menu-item').forEach(i=>i.classList.remove('active'));
+      this.classList.add('active');
+      
+      // Réinitialiser le formulaire si on quitte l'onglet véhicules
+      if(this.dataset.tab !== 'vehicles' && document.getElementById('vehicle-form').dataset.editingId) {
+        resetVehicleForm();
+      }
+    });
+  });
+
+  // forms
+  const vehicleForm = document.getElementById('vehicle-form');
+  if(vehicleForm) vehicleForm.addEventListener('submit', e => { e.preventDefault(); addVehicle(); });
+
+  const interventionForm = document.getElementById('intervention-form');
+  if(interventionForm) interventionForm.addEventListener('submit', e => { e.preventDefault(); addIntervention(); });
+
+  // search
+  const searchBtn = document.getElementById('search-button');
+  if(searchBtn) searchBtn.addEventListener('click', performSearch);
+
+  const globalSearch = document.getElementById('global-search');
+  if(globalSearch) globalSearch.addEventListener('input', e => performGlobalSearch(e.target.value));
+}
+
+function switchTab(tabName){
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  const el = document.getElementById(`${tabName}-tab`);
+  if(el) el.classList.add('active');
+}
+
+// Add vehicle
+async function addVehicle(){
+  const immatriculation = document.getElementById('immatriculation').value.trim();
+  const modele = document.getElementById('modele').value.trim();
+  const couleur = document.getElementById('couleur').value.trim();
+  const proprietaire = document.getElementById('proprietaire').value.trim();
+  const telephone = document.getElementById('telephone').value.trim();
+  const photoInput = document.getElementById('photo');
+  const editingId = document.getElementById('vehicle-form').dataset.editingId;
+
+  if(!immatriculation || !modele) { 
+    showNotification("Immatriculation et modèle requis", "error"); 
+    return; 
+  }
+
+  // Vérifier si l'immatriculation existe déjà (sauf pour le véhicule en cours d'édition)
+  if (vehicles.some(v => v.immatriculation === immatriculation && v.id !== editingId)) {
+    showNotification("Cette immatriculation est déjà utilisée!", "error");
+    return;
+  }
+
+  let photoUrl = 'https://via.placeholder.com/100x70?text=Vehicle';
+  if(photoInput && photoInput.files && photoInput.files[0]) {
+    // preview object URL (simulé)
+    photoUrl = URL.createObjectURL(photoInput.files[0]);
+  } else if (editingId) {
+    // Garder la photo existante si on modifie et qu'aucune nouvelle photo n'est sélectionnée
+    const existingVehicle = vehicles.find(v => v.id === editingId);
+    if (existingVehicle) {
+      photoUrl = existingVehicle.photo;
+    }
+  }
+
+  const vehicleData = {
+    immatriculation, 
+    modele, 
+    couleur, 
+    proprietaire, 
+    telephone, 
+    photo: photoUrl, 
+    dateAjout: new Date().toISOString()
+  };
+
+  try {
+    if (editingId) {
+      // Mode édition: mettre à jour le véhicule existant
+      await db.collection('vehicles').doc(editingId).update(vehicleData);
+      
+      // Mettre à jour localement
+      const index = vehicles.findIndex(v => v.id === editingId);
+      if (index !== -1) {
+        vehicles[index] = { ...vehicles[index], ...vehicleData };
+      }
+      
+      showNotification("Véhicule modifié avec succès!");
+    } else {
+      // Mode ajout: créer un nouveau véhicule
+      const docRef = await db.collection('vehicles').add(vehicleData);
+      vehicleData.id = docRef.id;
+      vehicles.push(vehicleData);
+      showNotification("Véhicule ajouté avec succès!");
+    }
     
-    <div class="container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="logo">
-                <span>Garage Manager</span>
-            </div>
-            <div class="menu-item active" data-tab="dashboard">
-                <i>📊</i>
-                <span>Tableau de bord</span>
-            </div>
-            <div class="menu-item" data-tab="vehicles">
-                <i>🚗</i>
-                <span>Véhicules</span>
-            </div>
-            <div class="menu-item" data-tab="interventions">
-                <i>🔧</i>
-                <span>Interventions</span>
-            </div>
-            <div class="menu-item" data-tab="search">
-                <i>🔍</i>
-                <span>Recherche</span>
-            </div>
-            <div class="menu-item" data-tab="stats">
-                <i>📈</i>
-                <span>Statistiques</span>
-            </div>
-        </div>
+    updateUI();
+    resetVehicleForm();
+  } catch (err) {
+    console.error(err);
+    showNotification("Erreur lors de l'opération", "error");
+  }
+}
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <div class="header">
-                <h1>Tableau de Bord - Garage HR MOTORS</h1>
-                <div>
-                    <input type="text" id="global-search" placeholder="Rechercher..." style="padding: 10px; width: 250px; border-radius: 4px; border: 1px solid #ddd;">
-                </div>
-            </div>
+// Fonction pour réinitialiser le formulaire
+function resetVehicleForm() {
+  document.getElementById('vehicle-form').reset();
+  delete document.getElementById('vehicle-form').dataset.editingId;
+  document.querySelector('#vehicle-form button[type="submit"]').textContent = 'Enregistrer le véhicule';
+}
 
-            <!-- Dashboard Tab -->
-            <div id="dashboard-tab" class="tab-content active">
-                <!-- Stats Cards -->
-                <div class="stats-cards">
-                    <div class="stat-card">
-                        <h3>Véhicules en garage</h3>
-                        <div class="number" id="vehicles-count">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Interventions aujourd'hui</h3>
-                        <div class="number" id="interventions-today">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Vidanges ce mois</h3>
-                        <div class="number" id="oil-changes-month">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Réparations en cours</h3>
-                        <div class="number" id="repairs-in-progress">0</div>
-                    </div>
-                </div>
+// Add intervention
+async function addIntervention(){
+  const vehiculeId = document.getElementById('vehicule-intervention').value;
+  const date = document.getElementById('date-intervention').value;
+  const type = document.getElementById('type-intervention').value.trim();
+  const mecaniciensElements = document.getElementById('mecaniciens');
+  const pieces = document.getElementById('pieces').value.trim();
+  const statut = document.getElementById('statut').value;
+  const observations = document.getElementById('observations').value.trim();
 
-                <div class="form-section">
-                    <h2>Activité récente</h2>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Véhicule</th>
-                                <th>Intervention</th>
-                                <th>Mécanicien</th>
-                                <th>Date</th>
-                                <th>Statut</th>
-                            </tr>
-                        </thead>
-                        <tbody id="recent-activity">
-                            <!-- Le contenu sera généré par JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+  if(!vehiculeId){ showNotification("Sélectionner un véhicule", "error"); return; }
+  if(!date || !type){ showNotification("Date et type requis", "error"); return; }
 
-            <!-- Vehicles Tab -->
-            <div id="vehicles-tab" class="tab-content">
-                <div class="form-section">
-                    <h2>Nouveau Véhicule</h2>
-                    <form id="vehicle-form">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="immatriculation">Immatriculation</label>
-                                <input type="text" id="immatriculation" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="modele">Modèle</label>
-                                <input type="text" id="modele" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="couleur">Couleur</label>
-                                <input type="text" id="couleur" required>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="photo">Photo du véhicule</label>
-                                <input type="file" id="photo" accept="image/*">
-                            </div>
-                            <div class="form-group">
-                                <label for="proprietaire">Propriétaire</label>
-                                <input type="text" id="proprietaire">
-                            </div>
-                            <div class="form-group">
-                                <label for="telephone">Téléphone</label>
-                                <input type="tel" id="telephone">
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Enregistrer le véhicule</button>
-                    </form>
-                </div>
+  // mecaniciens: read selected options text
+  const mecaniciens = Array.from(mecaniciensElements.selectedOptions).map(o => o.text);
 
-                <div class="form-section">
-                    <h2>Liste des Véhicules</h2>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Photo</th>
-                                <th>Immatriculation</th>
-                                <th>Modèle</th>
-                                <th>Couleur</th>
-                                <th>Propriétaire</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="vehicles-list">
-                            <!-- Le contenu sera généré par JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+  const vehicle = vehicles.find(v => v.id == vehiculeId);
+  if(!vehicle){ showNotification("Véhicule introuvable", "error"); return; }
 
-            <!-- Interventions Tab -->
-            <div id="interventions-tab" class="tab-content">
-                <div class="form-section">
-                    <h2>Nouvelle Intervention</h2>
-                    <form id="intervention-form">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="vehicule-intervention">Véhicule</label>
-                                <select id="vehicule-intervention" required>
-                                    <option value="">Sélectionner un véhicule</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="date-intervention">Date</label>
-                                <input type="date" id="date-intervention" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="type-intervention">Type d'intervention</label>
-                                <select id="type-intervention" required>
-                                    <option value="">Sélectionner un type</option>
-                                    <option value="vidange">Vidange</option>
-                                    <option value="reparation">Réparation</option>
-                                    <option value="controle">Contrôle technique</option>
-                                    <option value="autre">Autre</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="mecaniciens">Mécaniciens</label>
-                                <select id="mecaniciens" multiple>
-                                    <option value="1">YOBOUET SYLVIN</option>
-                                    <option value="2">KHALIL HUSSEIN</option>
-                                    <option value="3">NIANKINE YOUSSOUF</option>
-                                    <option value="4">OUATTARA ISSIF</option>
-                                    <option value="5">BABA DRAMANE</option>
-                                    <option value="6">KONE SAIDOU</option>
-                                    <option value="7">TRAORE ABDELATIF</option>
-                                    <option value="8">KOUAME K WILLIAM</option>
-                                    <option value="9">DIABATE HASSAN</option>
-                                    <option value="10">MOHAMED</option>
-                                    <option value="11">MANBONNE A AZIZ</option>
-                                    <option value="12">TOUVOLI KEVIN</option>
-                                    <option value="13">TOURE OTHNIEL</option>
-                                    <option value="14">VEHI EBENEZER</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="pieces">Pièces utilisées</label>
-                                <textarea id="pieces" placeholder="Liste des pièces utilisées..."></textarea>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="statut">Statut</label>
-                                <select id="statut" required>
-                                    <option value="en-attente">En attente</option>
-                                    <option value="en-cours">En cours</option>
-                                    <option value="termine">Terminé</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="observations">Observations</label>
-                                <textarea id="observations" placeholder="Observations..."></textarea>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Enregistrer l'intervention</button>
-                    </form>
-                </div>
+  const newIntervention = {
+    vehiculeId: vehicle.id,
+    immatriculation: vehicle.immatriculation,
+    modele: vehicle.modele,
+    date, type, mecaniciens, pieces, statut, observations
+  };
 
-                <div class="form-section">
-                    <h2>Interventions Récentes</h2>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Véhicule</th>
-                                <th>Date</th>
-                                <th>Type</th>
-                                <th>Mécaniciens</th>
-                                <th>Statut</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="interventions-list">
-                            <!-- Le contenu sera généré par JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+  try {
+    const docRef = await db.collection('interventions').add(newIntervention);
+    newIntervention.id = docRef.id;
+    interventions.push(newIntervention);
+    updateUI();
+    document.getElementById('intervention-form').reset();
+    // reset date to today
+    document.getElementById('date-intervention').value = new Date().toISOString().split('T')[0];
+    showNotification("Intervention enregistrée avec succès!");
+  } catch (err) {
+    console.error(err);
+    showNotification("Erreur lors de l'ajout de l'intervention", "error");
+  }
+}
 
-            <!-- Search Tab -->
-            <div id="search-tab" class="tab-content">
-                <div class="search-section">
-                    <h2>Recherche de Véhicules</h2>
-                    <div class="search-filters">
-                        <input type="text" id="search-immatriculation" placeholder="Immatriculation">
-                        <input type="text" id="search-modele" placeholder="Modèle">
-                        <input type="text" id="search-couleur" placeholder="Couleur">
-                        <input type="date" id="search-date" placeholder="Date d'entrée">
-                        <select id="search-type">
-                            <option value="">Type d'intervention</option>
-                            <option value="vidange">Vidange</option>
-                            <option value="reparation">Réparation</option>
-                            <option value="controle">Contrôle technique</option>
-                        </select>
-                    </div>
-                    <button class="btn btn-primary" id="search-button">Rechercher</button>
-                </div>
+// Search by filters
+function performSearch(){
+  const immatriculation = (document.getElementById('search-immatriculation').value || '').toLowerCase();
+  const modele = (document.getElementById('search-modele').value || '').toLowerCase();
+  const couleur = (document.getElementById('search-couleur').value || '').toLowerCase();
+  const date = document.getElementById('search-date').value;
+  const type = document.getElementById('search-type').value;
 
-                <div class="form-section">
-                    <h2>Résultats de la Recherche</h2>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Photo</th>
-                                <th>Immatriculation</th>
-                                <th>Modèle</th>
-                                <th>Couleur</th>
-                                <th>Propriétaire</th>
-                                <th>Date entrée</th>
-                                <th>Dernière intervention</th>
-                            </tr>
-                        </thead>
-                        <tbody id="search-results">
-                            <!-- Le contenu sera généré par JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+  let results = vehicles.slice();
 
-            <!-- Statistics Tab -->
-            <div id="stats-tab" class="tab-content">
-                <div class="form-section">
-                    <h2>Statistiques des interventions</h2>
-                    <div class="stats-cards">
-                        <div class="stat-card">
-                            <h3>Total interventions</h3>
-                            <div class="number" id="total-interventions">0</div>
-                        </div>
-                        <div class="stat-card">
-                            <h3>Vidanges ce mois</h3>
-                            <div class="number" id="month-oil-changes">0</div>
-                        </div>
-                        <div class="stat-card">
-                            <h3>Taux de completion</h3>
-                            <div class="number" id="completion-rate">0%</div>
-                        </div>
-                    </div>
-                </div>
+  if(immatriculation) results = results.filter(v => v.immatriculation.toLowerCase().includes(immatriculation));
+  if(modele) results = results.filter(v => v.modele.toLowerCase().includes(modele));
+  if(couleur) results = results.filter(v => v.couleur.toLowerCase().includes(couleur));
 
-                <div class="form-section">
-                    <h2>Réparations par mécanicien</h2>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Mécanicien</th>
-                                <th>Interventions</th>
-                                <th>En cours</th>
-                                <th>Terminées</th>
-                            </tr>
-                        </thead>
-                        <tbody id="mechanics-stats">
-                            <!-- Le contenu sera généré par JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
+  if(date || type) {
+    const ids = interventions.filter(i => {
+      let match = true;
+      if(date) match = match && i.date === date;
+      if(type) match = match && i.type === type;
+      return match;
+    }).map(i => i.vehiculeId);
+    results = results.filter(v => ids.includes(v.id));
+  }
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+  const resultsContainer = document.getElementById('search-results');
+  resultsContainer.innerHTML = '';
+  if(results.length === 0){
+    resultsContainer.innerHTML = '<tr><td colspan="7" style="text-align:center">Aucun résultat trouvé</td></tr>';
+    return;
+  }
 
-    <script>
-        // Configuration Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyDgvf6KnIvbbpllpN35b4vJ21J8zvvuUUw",
-            authDomain: "dashboard-hr-garage.firebaseapp.com",
-            projectId: "dashboard-hr-garage",
-            storageBucket: "dashboard-hr-garage.firebasestorage.app",
-            messagingSenderId: "187836950909",
-            appId: "1:187836950909:web:cbb64faf9f7c8821a70414"
-        };
+  results.forEach(vehicle => {
+    const lastIntervention = interventions
+      .filter(i => i.vehiculeId === vehicle.id)
+      .sort((a,b)=> new Date(b.date) - new Date(a.date))[0];
 
-        // Initialiser Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><img src="${vehicle.photo}" class="vehicle-photo" alt="photo"></td>
+      <td>${vehicle.immatriculation}</td>
+      <td>${vehicle.modele}</td>
+      <td>${vehicle.couleur}</td>
+      <td>${vehicle.proprietaire || ''}</td>
+      <td>${formatDate(vehicle.dateAjout)}</td>
+      <td>${lastIntervention ? `${lastIntervention.type} (${formatDate(lastIntervention.date)})` : 'Aucune'}</td>
+    `;
+    resultsContainer.appendChild(tr);
+  });
+}
 
-        // Données de l'application
-        let vehicles = [];
-        let interventions = [];
-        
-        // Éléments DOM
-        const notification = document.getElementById('notification');
-        
-        // Initialisation
-        document.addEventListener('DOMContentLoaded', function() {
-            initApp();
-            loadData();
-            setupEventListeners();
-        });
-        
-        function initApp() {
-            // Définir la date du jour comme valeur par défaut pour le champ date
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('date-intervention').value = today;
-        }
-        
-        // Charger les données depuis Firestore
-        async function loadData() {
-            try {
-                // Charger les véhicules
-                const vehiclesSnapshot = await db.collection('vehicles').get();
-                vehicles = vehiclesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                
-                // Charger les interventions
-                const interventionsSnapshot = await db.collection('interventions').get();
-                interventions = interventionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                
-                updateUI();
-            } catch (error) {
-                console.error("Erreur lors du chargement des données:", error);
-                showNotification("Erreur de chargement des données", "error");
-            }
-        }
-        
-        function setupEventListeners() {
-            // Navigation
-            document.querySelectorAll('.menu-item').forEach(item => {
-                item.addEventListener('click', function() {
-                    switchTab(this.dataset.tab);
-                    
-                    // Mettre à jour la classe active
-                    document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
-            
-            // Formulaires
-            document.getElementById('vehicle-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                addVehicle();
-            });
-            
-            document.getElementById('intervention-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                addIntervention();
-            });
-            
-            // Recherche
-            document.getElementById('search-button').addEventListener('click', function() {
-                performSearch();
-            });
-            
-            // Recherche globale
-            document.getElementById('global-search').addEventListener('input', function(e) {
-                performGlobalSearch(e.target.value);
-            });
-        }
-        
-        function switchTab(tabName) {
-            // Masquer tous les onglets
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            // Afficher l'onglet sélectionné
-            const tabElement = document.getElementById(`${tabName}-tab`);
-            if (tabElement) {
-                tabElement.classList.add('active');
-            }
-        }
-        
-        async function addVehicle() {
-            const immatriculation = document.getElementById('immatriculation').value;
-            const modele = document.getElementById('modele').value;
-            const couleur = document.getElementById('couleur').value;
-            const proprietaire = document.getElementById('proprietaire').value;
-            const telephone = document.getElementById('telephone').value;
-            
-            // Vérifier si le véhicule existe déjà
-            if (vehicles.some(v => v.immatriculation === immatriculation)) {
-                showNotification("Ce véhicule est déjà enregistré!", "error");
-                return;
-            }
-            
-            // Gérer l'upload de photo (simulé)
-            const photoInput = document.getElementById('photo');
-            let photoUrl = 'https://via.placeholder.com/100x70';
-            
-            if (photoInput.files && photoInput.files[0]) {
-                // En réalité, il faudrait uploader l'image sur un serveur
-                // Ici on simule juste avec une URL locale
-                photoUrl = URL.createObjectURL(photoInput.files[0]);
-            }
-            
-            // Ajouter le véhicule
-            const newVehicle = {
-                immatriculation,
-                modele,
-                couleur,
-                proprietaire,
-                telephone,
-                photo: photoUrl,
-                dateAjout: new Date().toISOString()
-            };
-            
-            try {
-                // Ajouter à Firestore
-                const docRef = await db.collection('vehicles').add(newVehicle);
-                newVehicle.id = docRef.id;
-                
-                // Ajouter au tableau local
-                vehicles.push(newVehicle);
-                updateUI();
-                document.getElementById('vehicle-form').reset();
-                
-                showNotification("Véhicule ajouté avec succès!");
-            } catch (error) {
-                console.error("Erreur lors de l'ajout du véhicule:", error);
-                showNotification("Erreur lors de l'ajout du véhicule", "error");
-            }
-        }
-        
-        async function addIntervention() {
-            const vehiculeId = document.getElementById('vehicule-intervention').value;
-            const date = document.getElementById('date-intervention').value;
-            const type = document.getElementById('type-intervention').value;
-            const mecaniciensElements = document.getElementById('mecaniciens');
-            const mecaniciens = Array.from(mecaniciensElements.selectedOptions).map(o => o.text);
-            const pieces = document.getElementById('pieces').value;
-            const statut = document.getElementById('statut').value;
-            const observations = document.getElementById('observations').value;
-            
-            // Trouver le véhicule
-            const vehicle = vehicles.find(v => v.id == vehiculeId);
-            if (!vehicle) {
-                showNotification("Veuillez sélectionner un véhicule valide", "error");
-                return;
-            }
-            
-            // Ajouter l'intervention
-            const newIntervention = {
-                vehiculeId: vehicle.id,
-                immatriculation: vehicle.immatriculation,
-                modele: vehicle.modele,
-                date,
-                type,
-                mecaniciens,
-                pieces,
-                statut,
-                observations
-            };
-            
-            try {
-                // Ajouter à Firestore
-                const docRef = await db.collection('interventions').add(newIntervention);
-                newIntervention.id = docRef.id;
-                
-                // Ajouter au tableau local
-                interventions.push(newIntervention);
-                updateUI();
-                document.getElementById('intervention-form').reset();
-                
-                showNotification("Intervention enregistrée avec succès!");
-            } catch (error) {
-                console.error("Erreur lors de l'ajout de l'intervention:", error);
-                showNotification("Erreur lors de l'ajout de l'intervention", "error");
-            }
-        }
-        
-        function performSearch() {
-            const immatriculation = document.getElementById('search-immatriculation').value.toLowerCase();
-            const modele = document.getElementById('search-modele').value.toLowerCase();
-            const couleur = document.getElementById('search-couleur').value.toLowerCase();
-            const date = document.getElementById('search-date').value;
-            const type = document.getElementById('search-type').value;
-            
-            let results = vehicles;
-            
-            // Filtrer par critères
-            if (immatriculation) {
-                results = results.filter(v => v.immatriculation.toLowerCase().includes(immatriculation));
-            }
-            
-            if (modele) {
-                results = results.filter(v => v.modele.toLowerCase().includes(modele));
-            }
-            
-            if (couleur) {
-                results = results.filter(v => v.couleur.toLowerCase().includes(couleur));
-            }
-            
-            // Filtrer par interventions si nécessaire
-            if (date || type) {
-                let interventionIds = interventions
-                    .filter(i => {
-                        let match = true;
-                        if (date) match = match && i.date === date;
-                        if (type) match = match && i.type === type;
-                        return match;
-                    })
-                    .map(i => i.vehiculeId);
-                
-                results = results.filter(v => interventionIds.includes(v.id));
-            }
-            
-            // Afficher les résultats
-            const resultsContainer = document.getElementById('search-results');
-            resultsContainer.innerHTML = '';
-            
-            if (results.length === 0) {
-                resultsContainer.innerHTML = '<tr><td colspan="7" style="text-align: center;">Aucun résultat trouvé</td></tr>';
-                return;
-            }
-            
-            results.forEach(vehicle => {
-                // Trouver la dernière intervention pour ce véhicule
-                const lastIntervention = interventions
-                    .filter(i => i.vehiculeId === vehicle.id)
-                    .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
-                
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td><img src="${vehicle.photo}" class="vehicle-photo" alt="Véhicule"></td>
-                    <td>${vehicle.immatriculation}</td>
-                    <td>${vehicle.modele}</td>
-                    <td>${vehicle.couleur}</td>
-                    <td>${vehicle.proprietaire}</td>
-                    <td>${formatDate(vehicle.dateAjout)}</td>
-                    <td>${lastIntervention ? `${lastIntervention.type} (${formatDate(lastIntervention.date)})` : 'Aucune'}</td>
-                `;
-                resultsContainer.appendChild(row);
-            });
-        }
-        
-        function performGlobalSearch(query) {
-            // Implémentation simplifiée de la recherche globale
-            if (query.length < 2) return;
-            
-            const results = [
-                ...vehicles.filter(v => 
-                    v.immatriculation.toLowerCase().includes(query.toLowerCase()) ||
-                    v.modele.toLowerCase().includes(query.toLowerCase()) ||
-                    v.couleur.toLowerCase().includes(query.toLowerCase()) ||
-                    v.proprietaire.toLowerCase().includes(query.toLowerCase())
-                ),
-                ...interventions.filter(i => 
-                    i.immatriculation.toLowerCase().includes(query.toLowerCase()) ||
-                    i.type.toLowerCase().includes(query.toLowerCase()) ||
-                    i.mecaniciens.some(m => m.toLowerCase().includes(query.toLowerCase())) ||
-                    i.pieces.toLowerCase().includes(query.toLowerCase())
-                ).map(i => {
-                    const vehicle = vehicles.find(v => v.id === i.vehiculeId);
-                    return vehicle ? vehicle : null;
-                }).filter(v => v !== null)
-            ];
-            
-            // Éliminer les doublons
-            const uniqueResults = [...new Map(results.map(item => [item.id, item])).values()];
-            
-            // Pour l'instant, on affiche juste un message avec le nombre de résultats
-            // Dans une version plus avancée, on pourrait afficher les résultats
-            if (uniqueResults.length > 0) {
-                showNotification(`${uniqueResults.length} résultat(s) trouvé(s) pour "${query}"`);
-            }
-        }
-        
-        function updateUI() {
-            updateVehicleList();
-            updateInterventionsList();
-            updateVehicleSelect();
-            updateStats();
-            updateRecentActivity();
-        }
-        
-        function updateVehicleList() {
-            const container = document.getElementById('vehicles-list');
-            container.innerHTML = '';
-            
-            if (vehicles.length === 0) {
-                container.innerHTML = '<tr><td colspan="6" style="text-align: center;">Aucun véhicule enregistré</td></tr>';
-                return;
-            }
-            
-            vehicles.forEach(vehicle => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td><img src="${vehicle.photo}" class="vehicle-photo" alt="Véhicule"></td>
-                    <td>${vehicle.immatriculation}</td>
-                    <td>${vehicle.modele}</td>
-                    <td>${vehicle.couleur}</td>
-                    <td>${vehicle.proprietaire}</td>
-                    <td class="action-buttons">
-                        <button class="btn-edit" onclick="editVehicle('${vehicle.id}')">Modifier</button>
-                        <button class="btn-delete" onclick="deleteVehicle('${vehicle.id}')">Supprimer</button>
-                    </td>
-                `;
-                container.appendChild(row);
-            });
-        }
-        
-        function updateInterventionsList() {
-            const container = document.getElementById('interventions-list');
-            container.innerHTML = '';
-            
-            if (interventions.length === 0) {
-                container.innerHTML = '<tr><td colspan="6" style="text-align: center;">Aucune intervention enregistrée</td></tr>';
-                return;
-            }
-            
-            // Trier par date (la plus récente d'abord)
-            const sortedInterventions = [...interventions].sort((a, b) => new Date(b.date) - new Date(a.date));
-            
-            sortedInterventions.forEach(intervention => {
-                const vehicle = vehicles.find(v => v.id === intervention.vehiculeId);
-                if (!vehicle) return;
-                
-                const statusClass = `status-${intervention.statut}`;
-                
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${vehicle.immatriculation} (${vehicle.modele})</td>
-                    <td>${formatDate(intervention.date)}</td>
-                    <td>${intervention.type}</td>
-                    <td>${intervention.mecaniciens.join(', ')}</td>
-                    <td><span class="status-badge ${statusClass}">${intervention.statut}</span></td>
-                    <td class="action-buttons">
-                        <button class="btn-edit" onclick="viewIntervention('${intervention.id}')">Détails</button>
-                    </td>
-                `;
-                container.appendChild(row);
-            });
-        }
-        
-        function updateVehicleSelect() {
-            const select = document.getElementById('vehicule-intervention');
-            select.innerHTML = '<option value="">Sélectionner un véhicule</option>';
-            
-            vehicles.forEach(vehicle => {
-                const option = document.createElement('option');
-                option.value = vehicle.id;
-                option.textContent = `${vehicle.immatriculation} - ${vehicle.modele}`;
-                select.appendChild(option);
-            });
-        }
-        
-        function updateStats() {
-            // Stats des véhicules
-            document.getElementById('vehicles-count').textContent = vehicles.length;
-            
-            // Interventions aujourd'hui
-            const today = new Date().toISOString().split('T')[0];
-            const todayInterventions = interventions.filter(i => i.date === today).length;
-            document.getElementById('interventions-today').textContent = todayInterventions;
-            
-            // Vidanges ce mois-ci
-            const currentMonth = new Date().getMonth();
-            const currentYear = new Date().getFullYear();
-            const monthlyOilChanges = interventions.filter(i => {
-                const interventionDate = new Date(i.date);
-                return i.type === 'vidange' && 
-                       interventionDate.getMonth() === currentMonth &&
-                       interventionDate.getFullYear() === currentYear;
-            }).length;
-            document.getElementById('oil-changes-month').textContent = monthlyOilChanges;
-            
-            // Réparations en cours
-            const inProgressRepairs = interventions.filter(i => i.statut === 'en-cours').length;
-            document.getElementById('repairs-in-progress').textContent = inProgressRepairs;
-            
-            // Stats avancées pour l'onglet statistiques
-            document.getElementById('total-interventions').textContent = interventions.length;
-            document.getElementById('month-oil-changes').textContent = monthlyOilChanges;
-            
-            // Taux de completion
-            const completed = interventions.filter(i => i.statut === 'termine').length;
-            const completionRate = interventions.length > 0 ? Math.round((completed / interventions.length) * 100) : 0;
-            document.getElementById('completion-rate').textContent = `${completionRate}%`;
-            
-            // Stats par mécanicien
-            const mechanicsStats = {};
-            interventions.forEach(intervention => {
-                intervention.mecaniciens.forEach(mechanic => {
-                    if (!mechanicsStats[mechanic]) {
-                        mechanicsStats[mechanic] = { total: 0, inProgress: 0, completed: 0 };
-                    }
-                    
-                    mechanicsStats[mechanic].total++;
-                    if (intervention.statut === 'en-cours') {
-                        mechanicsStats[mechanic].inProgress++;
-                    } else if (intervention.statut === 'termine') {
-                        mechanicsStats[mechanic].completed++;
-                    }
-                });
-            });
-            
-            const mechanicsContainer = document.getElementById('mechanics-stats');
-            mechanicsContainer.innerHTML = '';
-            
-            for (const mechanic in mechanicsStats) {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${mechanic}</td>
-                    <td>${mechanicsStats[mechanic].total}</td>
-                    <td>${mechanicsStats[mechanic].inProgress}</td>
-                    <td>${mechanicsStats[mechanic].completed}</td>
-                `;
-                mechanicsContainer.appendChild(row);
-            }
-        }
-        
-        function updateRecentActivity() {
-            const container = document.getElementById('recent-activity');
-            container.innerHTML = '';
-            
-            // Prendre les 5 interventions les plus récentes
-            const recentInterventions = [...interventions]
-                .sort((a, b) => new Date(b.date) - new Date(a.date))
-                .slice(0, 5);
-            
-            if (recentInterventions.length === 0) {
-                container.innerHTML = '<tr><td colspan="5" style="text-align: center;">Aucune activité récente</td></tr>';
-                return;
-            }
-            
-            recentInterventions.forEach(intervention => {
-                const vehicle = vehicles.find(v => v.id === intervention.vehiculeId);
-                if (!vehicle) return;
-                
-                const statusClass = `status-${intervention.statut}`;
-                
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${vehicle.immatriculation} (${vehicle.modele})</td>
-                    <td>${intervention.type}</td>
-                    <td>${intervention.mecaniciens.join(', ')}</td>
-                    <td>${formatDate(intervention.date)}</td>
-                    <td><span class="status-badge ${statusClass}">${intervention.statut}</span></td>
-                `;
-                container.appendChild(row);
-            });
-        }
-        
-        async function editVehicle(id) {
-            const vehicle = vehicles.find(v => v.id === id);
-            if (!vehicle) return;
-            
-            // Remplir le formulaire avec les données du véhicule
-            document.getElementById('immatriculation').value = vehicle.immatriculation;
-            document.getElementById('modele').value = vehicle.modele;
-            document.getElementById('couleur').value = vehicle.couleur;
-            document.getElementById('proprietaire').value = vehicle.proprietaire;
-            document.getElementById('telephone').value = vehicle.telephone;
-            
-            // Supprimer le véhicule pour le remplacer après modification
-            await deleteVehicle(id, false);
-            
-            showNotification("Modifiez le véhicule et cliquez sur Enregistrer");
-        }
-        
-        async function deleteVehicle(id, showNote = true) {
-            if (confirm("Êtes-vous sûr de vouloir supprimer ce véhicule?")) {
-                try {
-                    // Supprimer de Firestore
-                    await db.collection('vehicles').doc(id).delete();
-                    
-                    // Supprimer du tableau local
-                    vehicles = vehicles.filter(v => v.id !== id);
-                    
-                    // Supprimer aussi les interventions associées
-                    const interventionsToDelete = interventions.filter(i => i.vehiculeId === id);
-                    for (const intervention of interventionsToDelete) {
-                        await db.collection('interventions').doc(intervention.id).delete();
-                    }
-                    interventions = interventions.filter(i => i.vehiculeId !== id);
-                    
-                    updateUI();
-                    
-                    if (showNote) {
-                        showNotification("Véhicule supprimé avec succès");
-                    }
-                } catch (error) {
-                    console.error("Erreur lors de la suppression du véhicule:", error);
-                    showNotification("Erreur lors de la suppression du véhicule", "error");
-                }
-            }
-        }
-        
-        function viewIntervention(id) {
-            const intervention = interventions.find(i => i.id === id);
-            if (!intervention) return;
-            
-            const vehicle = vehicles.find(v => v.id === intervention.vehiculeId);
-            if (!vehicle) return;
-            
-            alert(`Détails de l'intervention:
-Véhicule: ${vehicle.immatriculation} - ${vehicle.modele}
-Date: ${formatDate(intervention.date)}
-Type: ${intervention.type}
-Mécaniciens: ${intervention.mecaniciens.join(', ')}
-Pièces utilisées: ${intervention.pieces}
-Statut: ${intervention.statut}
-Observations: ${intervention.observations}`);
-        }
-        
-        function showNotification(message, type = "success") {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.className = `notification ${type}`;
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
-        }
-        
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('fr-FR');
-        }
-    </script>
+// Global search (simple)
+function performGlobalSearch(query){
+  if(!query || query.length < 2) return;
+  query = query.toLowerCase();
+
+  const results = [
+    ...vehicles.filter(v => v.immatriculation.toLowerCase().includes(query) || v.modele.toLowerCase().includes(query) || (v.proprietaire || '').toLowerCase().includes(query)),
+    ...interventions.filter(i => i.immatriculation.toLowerCase().includes(query) || (i.type || '').toLowerCase().includes(query) || i.mecaniciens.some(m => m.toLowerCase().includes(query))).map(i => vehicles.find(v=>v.id===i.vehiculeId)).filter(Boolean)
+  ];
+
+  const unique = [...new Map(results.map(r => [r.id, r])).values()];
+  if(unique.length) showNotification(`${unique.length} résultat(s) trouvé(s) pour "${query}"`);
+}
+
+// UI updates
+function updateUI(){
+  updateVehicleList();
+  updateInterventionsList();
+  updateVehicleSelect();
+  updateStats();
+  updateRecentActivity();
+}
+
+function updateVehicleList(){
+  const container = document.getElementById('vehicles-list');
+  container.innerHTML = '';
+  if(vehicles.length === 0) { container.innerHTML = '<tr><td colspan="6" style="text-align:center">Aucun véhicule enregistré</td></tr>'; return; }
+
+  vehicles.forEach(vehicle => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><img src="${vehicle.photo}" class="vehicle-photo" alt="photo"></td>
+      <td>${vehicle.immatriculation}</td>
+      <td>${vehicle.modele}</td>
+      <td>${vehicle.couleur}</td>
+      <td>${vehicle.proprietaire || ''}</td>
+      <td class="action-buttons">
+        <button class="btn-edit" onclick="editVehicle('${vehicle.id}')">Modifier</button>
+        <button class="btn-delete" onclick="deleteVehicle('${vehicle.id}')">Supprimer</button>
+      </td>
+    `;
+    container.appendChild(tr);
+  });
+}
+
+function updateInterventionsList(){
+  const container = document.getElementById('interventions-list');
+  container.innerHTML = '';
+  if(interventions.length === 0) { container.innerHTML = '<tr><td colspan="6" style="text-align:center">Aucune intervention enregistrée</td></tr>'; return; }
+
+  const sorted = [...interventions].sort((a,b)=> new Date(b.date) - new Date(a.date));
+  sorted.forEach(i => {
+    const vehicle = vehicles.find(v=>v.id===i.vehiculeId);
+    if(!vehicle) return;
+    const statusClass = `status-${i.statut}`;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${vehicle.immatriculation} (${vehicle.modele})</td>
+      <td>${formatDate(i.date)}</td>
+      <td>${i.type}</td>
+      <td>${i.mecaniciens.join(', ')}</td>
+      <td><span class="status-badge ${statusClass}">${i.statut}</span></td>
+      <td class="action-buttons"><button class="btn-edit" onclick="viewIntervention('${i.id}')">Détails</button></td>
+    `;
+    container.appendChild(tr);
+  });
+}
+
+function updateVehicleSelect(){
+  const select = document.getElementById('vehicule-intervention');
+  select.innerHTML = '<option value="">Sélectionner un véhicule</option>';
+  vehicles.forEach(v=>{
+    const opt = document.createElement('option');
+    opt.value = v.id;
+    opt.textContent = `${v.immatriculation} - ${v.modele}`;
+    select.appendChild(opt);
+  });
+}
+
+function updateStats(){
+  document.getElementById('vehicles-count').textContent = vehicles.length;
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('interventions-today').textContent = interventions.filter(i=>i.date===today).length;
+
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+  const monthlyOil = interventions.filter(i=>{
+    const d = new Date(i.date);
+    return i.type.toLowerCase() === 'vidange' && d.getMonth()===currentMonth && d.getFullYear()===currentYear;
+  }).length;
+  document.getElementById('oil-changes-month').textContent = monthlyOil;
+
+  document.getElementById('repairs-in-progress').textContent = interventions.filter(i=>i.statut==='en-cours').length;
+
+  document.getElementById('total-interventions').textContent = interventions.length;
+  document.getElementById('month-oil-changes').textContent = monthlyOil;
+  const completed = interventions.filter(i=>i.statut==='termine').length;
+  document.getElementById('completion-rate').textContent = interventions.length>0 ? `${Math.round((completed/interventions.length)*100)}%` : '0%';
+
+  // stats by mechanic
+  const mechanicsStats = {};
+  interventions.forEach(i=>{
+    (i.mecaniciens||[]).forEach(m=>{
+      if(!mechanicsStats[m]) mechanicsStats[m] = { total:0, inProgress:0, completed:0 };
+      mechanicsStats[m].total++;
+      if(i.statut==='en-cours') mechanicsStats[m].inProgress++;
+      if(i.statut==='termine') mechanicsStats[m].completed++;
+    });
+  });
+
+  const container = document.getElementById('mechanics-stats');
+  container.innerHTML = '';
+  Object.keys(mechanicsStats).forEach(m=>{
+    const row = document.createElement('tr');
+    row.innerHTML = `<td>${m}</td><td>${mechanicsStats[m].total}</td><td>${mechanicsStats[m].inProgress}</td><td>${mechanicsStats[m].completed}</td>`;
+    container.appendChild(row);
+  });
+}
+
+function updateRecentActivity(){
+  const container = document.getElementById('recent-activity');
+  container.innerHTML = '';
+  const recent = [...interventions].sort((a,b)=> new Date(b.date)-new Date(a.date)).slice(0,5);
+  if(recent.length===0){ container.innerHTML = '<tr><td colspan="5" style="text-align:center">Aucune activité récente</td></tr>'; return; }
+  recent.forEach(i=>{
+    const vehicle = vehicles.find(v=>v.id===i.vehiculeId);
+    if(!vehicle) return;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${vehicle.immatriculation} (${vehicle.modele})</td><td>${i.type}</td><td>${i.mecaniciens.join(', ')}</td><td>${formatDate(i.date)}</td><td><span class="status-badge status-${i.statut}">${i.statut}</span></td>`;
+    container.appendChild(tr);
+  });
+}
+
+// Edit & delete
+async function editVehicle(id){
+  const v = vehicles.find(x=>x.id===id);
+  if(!v) return;
+  
+  // Pré-remplir le formulaire avec les données du véhicule
+  document.getElementById('immatriculation').value = v.immatriculation;
+  document.getElementById('modele').value = v.modele;
+  document.getElementById('couleur').value = v.couleur;
+  document.getElementById('proprietaire').value = v.proprietaire || '';
+  document.getElementById('telephone').value = v.telephone || '';
+  
+  // Stocker l'ID du véhicule en cours d'édition
+  document.getElementById('vehicle-form').dataset.editingId = id;
+  
+  // Changer le texte du bouton pour indiquer qu'on est en mode édition
+  document.querySelector('#vehicle-form button[type="submit"]').textContent = 'Modifier le véhicule';
+  
+  showNotification("Modifiez le véhicule puis cliquez sur Modifier");
+}
+
+async function deleteVehicle(id, showNote = true){
+  if(!confirm("Êtes-vous sûr de vouloir supprimer ce véhicule?")) return;
+  try {
+    await db.collection('vehicles').doc(id).delete();
+    vehicles = vehicles.filter(v=>v.id!==id);
+
+    // delete related interventions
+    const toDelete = interventions.filter(i=>i.vehiculeId===id);
+    for(const it of toDelete){
+      if(it.id) await db.collection('interventions').doc(it.id).delete();
+    }
+    interventions = interventions.filter(i=>i.vehiculeId!==id);
+
+    updateUI();
+    if(showNote) showNotification("Véhicule supprimé avec succès");
+  } catch(err){
+    console.error(err);
+    showNotification("Erreur lors de la suppression", "error");
+  }
+}
+
+function viewIntervention(id){
+  const i = interventions.find(x=>x.id===id);
+  if(!i) return;
+  const v = vehicles.find(x=>x.id===i.vehiculeId);
+  alert(`Détails de l'intervention:
+Véhicule: ${v ? v.immatriculation + ' - ' + v.modele : 'N/A'}
+Date: ${formatDate(i.date)}
+Type: ${i.type}
+Mécaniciens: ${i.mecaniciens.join(', ')}
+Pièces: ${i.pieces || 'N/A'}
+Statut: ${i.statut}
+Observations: ${i.observations || 'N/A'}`);
+}
+
+// notifications
+function showNotification(message, type="success"){
+  const note = document.getElementById('notification');
+  note.textContent = message;
+  note.className = `notification ${type === 'error' ? 'error' : ''} show`;
+  setTimeout(()=>{ note.classList.remove('show'); }, 3000);
+}
+
+function formatDate(dateString){
+  const d = new Date(dateString);
+  return d.toLocaleDateString('fr-FR');
+}
+
+// expose some functions for inline onclick
+window.editVehicle = editVehicle;
+window.deleteVehicle = deleteVehicle;
+window.viewIntervention = viewIntervention;
+</script>
 </body>
 </html>
